@@ -1,0 +1,24 @@
+{
+  "name": "quiz-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "casperjs": "^1.1.0-beta3",
+    "phantomjs": "^1.9.18"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/azellsworth/quiz-scraper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/azellsworth/quiz-scraper/issues"
+  },
+  "homepage": "https://github.com/azellsworth/quiz-scraper"
+}
