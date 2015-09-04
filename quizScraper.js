@@ -1,9 +1,5 @@
 var fs = require('fs');
 
-if(fs){
-  console.log('I HAVE FS');
-}
-
 var casper = require('casper').create({
     retryTimeout: 200,
 });
@@ -102,36 +98,34 @@ casper.start(function() {
 
 casper.then(function(){
   quizUrlArray.forEach(function(url){
-    console.log("STARTING NEXT QUIZ: ", url);
     casper.thenOpen(url)
     casper.then(function() {
+      console.log("Starting quiz: ", url);
       if(this.evaluate(function(){
         return !!$('#start-button')[0];
       })){
         this.click('#start-button');
-        console.log('Clicked Start Button');
+        console.log('  | Clicked Start Button.');
 
         casper.waitForSelector('.give-up', function() {
           this.click('.give-up');
-          console.log('Clicked Give up');
+          console.log('  | Clicked Give up.');
         });
 
         casper.waitForSelector('.stat-table', function(){
-          console.log('ready to grab data');
+          console.log(' [O] Grabbing data...');
           returnedSet = this.evaluate(grabAllData);
           var stringifiedSet = JSON.stringify(returnedSet);
-          fs.write(returnedSet.title + '.json', stringifiedSet);
+          fs.write('./quizzes/' + returnedSet.title + '.json', stringifiedSet);
         });
 
       } else {
-        console.log('No Start Button Found');
+        console.log(' [X] No Start Button Found');
       }
     });
-
-  })
-})
+  });
+});
 
 casper.run(function() {
-
-    this.echo("DONE").exit();
+  this.echo("Scraping complete!").exit();
 });
