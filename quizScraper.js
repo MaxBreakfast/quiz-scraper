@@ -25,15 +25,15 @@ var grabAllData = function(){
   $('.stat-table').children().each(function(index){
     if (index !== 0){
       var questionObj = {};
-      console.log($(this).children().length);
+      // Concatenate columns 1 and 2 when there are two-part questions
       if ($(this).children().length === 5) {
-        questionObj.question = $(this).children()[0].innerHTML + ' - ' + $(this).children()[1].innerHTML;
-        questionObj.answer = $(this).children()[2].innerHTML;
+        questionObj.question = $($(this).children()[0]).text() + ' - ' + $($(this).children()[1]).text();
+        questionObj.answer = $($(this).children()[2]).text();
         questionObj.category = set.title;
         set.questions.push(questionObj);  
       } else {
-        questionObj.question = $(this).children()[0].innerHTML;
-        questionObj.answer = $(this).children()[1].innerHTML;
+        questionObj.question = $($(this).children()[0]).text();
+        questionObj.answer = $($(this).children()[1]).text();
         questionObj.category = set.title;
         set.questions.push(questionObj);  
       }
