@@ -14,6 +14,7 @@ var grabAllData = function(){
   instructions = instructions.replace(/\s+/g, " ");
   
   var set = {
+    quizLength: 0, 
     title: headingText,
     description: instructions,
     difficulty: -1,
@@ -22,14 +23,23 @@ var grabAllData = function(){
   };
 
   $('.stat-table').children().each(function(index){
-    if(index !== 0){
+    if (index !== 0){
       var questionObj = {};
-      questionObj.question = $(this).children()[0].innerHTML;
-      questionObj.answer = $(this).children()[1].innerHTML;
-      questionObj.category = set.title;
-      set.questions.push(questionObj);
+      // Concatenate columns 1 and 2 when there are two-part questions
+      if ($(this).children().length === 5) {
+        questionObj.question = $($(this).children()[0]).text() + ' - ' + $($(this).children()[1]).text();
+        questionObj.answer = $($(this).children()[2]).text();
+        questionObj.category = set.title;
+        set.questions.push(questionObj);  
+      } else {
+        questionObj.question = $($(this).children()[0]).text();
+        questionObj.answer = $($(this).children()[1]).text();
+        questionObj.category = set.title;
+        set.questions.push(questionObj);  
+      }
     }
   });
+  set.quizLength = set.questions.length;
   return set;
 };
 
@@ -114,6 +124,7 @@ casper.then(function(){
         casper.waitUntilVisible('.stat-table', function(){
           console.log('  | Grabbing data...');
           var returnedSet = this.evaluate(grabAllData);
+          returnedSet.url = url;
           var path;
           if (returnedSet.questions.length >= 24) {
             path = './quizzes/' + returnedSet.title + '.json';
