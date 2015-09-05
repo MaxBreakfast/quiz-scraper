@@ -147,7 +147,13 @@ casper.then(function(){
 
 casper.run(function() {
   var trivia = { sets: questionDatabase };
+  var totalQuestions = 0;
+  for (var i = 0; i < trivia.sets.length; i++) {
+    totalQuestions += trivia.sets[i].questions.length;
+  }
   console.log('Number of good sets: ', trivia.sets.length);
+  console.log('    Total Questions: ', totalQuestions);
+  console.log('----------------------------');
   var fullSet = JSON.stringify(trivia);
   fs.write('trivia.json', fullSet);
   this.echo('Scraping complete!').exit();
