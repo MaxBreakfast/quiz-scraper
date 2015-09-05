@@ -4,6 +4,8 @@ var casper = require('casper').create({
     retryTimeout: 200,
 });
 
+var questionDatabase = [];
+
 var grabAllData = function(){
   var headingDiv = $('h1');
   var headingText = headingDiv.text();
@@ -112,8 +114,15 @@ casper.then(function(){
         casper.waitUntilVisible('.stat-table', function(){
           console.log('  | Grabbing data...');
           var returnedSet = this.evaluate(grabAllData);
+          var path;
+          if (returnedSet.questions.length >= 24) {
+            path = './quizzes/' + returnedSet.title + '.json';
+            questionDatabase.push(returnedSet);
+          } else {
+            path = './shortQuizzes/' + returnedSet.title + '.json';
+          }
           var stringifiedSet = JSON.stringify(returnedSet);
-          fs.write('./quizzes/' + returnedSet.title + '.json', stringifiedSet);
+          fs.write(path, stringifiedSet);
           console.log(' ');
         });
 
@@ -126,5 +135,8 @@ casper.then(function(){
 });
 
 casper.run(function() {
+  var trivia = { sets: questionDatabase };
+  var fullSet = JSON.stringify(trivia);
+  fs.write('questionDatabase.json', fullSet);
   this.echo("Scraping complete!").exit();
 });
