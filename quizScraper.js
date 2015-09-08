@@ -121,21 +121,27 @@ casper.then(function(){
           console.log('  | Clicked Give up.');
         });
 
-        casper.waitUntilVisible('.stat-table', function(){
-          console.log('  | Grabbing data...');
-          var returnedSet = this.evaluate(grabAllData);
-          returnedSet.url = url;
-          var path;
-          if (returnedSet.questions.length >= 24) {
-            path = './quizzes/' + returnedSet.title + '.json';
-            questionDatabase.push(returnedSet);
-          } else {
-            path = './shortQuizzes/' + returnedSet.title + '.json';
-          }
-          var stringifiedSet = JSON.stringify(returnedSet);
-          fs.write(path, stringifiedSet);
-          console.log(' ');
-        });
+        casper.waitUntilVisible('.stat-table', 
+          function(){
+            console.log('  | Grabbing data...');
+            var returnedSet = this.evaluate(grabAllData);
+            returnedSet.url = url;
+            var path;
+            if (returnedSet.questions.length >= 24) {
+              path = './quizzes/' + returnedSet.title + '.json';
+              questionDatabase.push(returnedSet);
+            } else {
+              path = './shortQuizzes/' + returnedSet.title + '.json';
+            }
+            var stringifiedSet = JSON.stringify(returnedSet);
+            fs.write(path, stringifiedSet);
+            console.log(' ');
+          }, 
+          // if .stat-table isnt found, casper will timeout and invoke the following
+          function() {
+            console.log('  | ".stat-table" selector not found...');
+            console.log('  | skipping: ' + url);
+          });
 
       } else {
         console.log(' [X] No Start Button Found');
