@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "bluebird": "^2.10.0",
     "casperjs": "^1.1.0-beta3",
     "phantomjs": "^1.9.18"
   },

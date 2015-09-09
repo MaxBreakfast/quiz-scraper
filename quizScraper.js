@@ -1,11 +1,6 @@
 // File dependencies
 var fs = require('fs');
-
-// File paths
-var URLS_FILE_PATH = './urls.list';
-var BAD_URLS_FILE_PATH = './badurls.list';
-var GOOD_URLS_FILE_PATH = './goodurls.list';
-
+var config = require('./config');
 // Casper logic
 var casper = require('casper').create({
     retryTimeout: 200,
@@ -51,18 +46,18 @@ var grabAllData = function(){
 };
 
 var addToBadUrlsList = function (url) {
-  var badUrls = fs.read(BAD_URLS_FILE_PATH).split('\n');
+  var badUrls = fs.read(config.BAD_URLS_FILE_PATH).split('\n');
   if (badUrls.indexOf(url) === -1) {
-    fs.write(BAD_URLS_FILE_PATH, url + '\n', 'a');
+    fs.write(config.BAD_URLS_FILE_PATH, url + '\n', 'a');
     console.log('  | Add to bad URLs list.');              
   }
   console.log(' ');
 };
 
 var addToGoodUrlsList = function (url) {
-  var goodUrls = fs.read(GOOD_URLS_FILE_PATH).split('\n');
+  var goodUrls = fs.read(config.GOOD_URLS_FILE_PATH).split('\n');
   if (goodUrls.indexOf(url) === -1) {
-    fs.write(GOOD_URLS_FILE_PATH, url + '\n', 'a');
+    fs.write(config.GOOD_URLS_FILE_PATH, url + '\n', 'a');
     console.log('  | Add to good URLs list.');
   }
   console.log(' ');
@@ -70,7 +65,7 @@ var addToGoodUrlsList = function (url) {
 
 // Read urls from url list and save to array
 // Note: this uses the phantomJS filesystem module, NOT node's
-var quizUrlArray = fs.read(URLS_FILE_PATH).split('\n');
+var quizUrlArray = fs.read(config.URLS_FILE_PATH).split('\n');
 
 casper.start(function(){});
 
@@ -95,11 +90,11 @@ casper.then(function(){
             var returnedSet = this.evaluate(grabAllData);
             returnedSet.url = url;
             var path;
-            if (returnedSet.questions.length >= 24) {
-              path = './quizzes/' + returnedSet.title + '.json';
+            if (returnedSet.questions.length >= config.MINIMUM_NUMBER_OF_QUESTIONS) {
+              path = config.GOOD_QUIZZES_PATH + returnedSet.title + '.json';
               questionDatabase.push(returnedSet);
             } else {
-              path = './shortQuizzes/' + returnedSet.title + '.json';
+              path = config.SHORT_QUIZZES_PATH + returnedSet.title + '.json';
             }
             var stringifiedSet = JSON.stringify(returnedSet);
             fs.write(path, stringifiedSet);
@@ -121,7 +116,7 @@ casper.then(function(){
 
 casper.run(function() {
   // Empty URLs file after scraping is complete
-  fs.write(URLS_FILE_PATH, '', 'w');
+  fs.write(config.URLS_FILE_PATH, '', 'w');
 
   var trivia = { sets: questionDatabase };
   var totalQuestions = 0;
